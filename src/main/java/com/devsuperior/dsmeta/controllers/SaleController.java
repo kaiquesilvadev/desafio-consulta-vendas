@@ -1,13 +1,19 @@
 package com.devsuperior.dsmeta.controllers;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.devsuperior.dsmeta.dto.SaleMinDTO;
+import com.devsuperior.dsmeta.dto.SummaryDto;
 import com.devsuperior.dsmeta.services.SaleService;
 
 @RestController
@@ -16,7 +22,7 @@ public class SaleController {
 
 	@Autowired
 	private SaleService service;
-	
+
 	@GetMapping(value = "/{id}")
 	public ResponseEntity<SaleMinDTO> findById(@PathVariable Long id) {
 		SaleMinDTO dto = service.findById(id);
@@ -24,14 +30,16 @@ public class SaleController {
 	}
 
 	@GetMapping(value = "/report")
-	public ResponseEntity<?> getReport() {
-		// TODO
-		return null;
+	public ResponseEntity<Page<SaleMinDTO>> getReport(String minDate, String maxDate,
+			@RequestParam(name = "name", defaultValue = "") String name, Pageable pageable) {
+
+		Page<SaleMinDTO> Page = service.ListReport(minDate, maxDate, name, pageable);
+		return ResponseEntity.ok().body(Page);
 	}
 
 	@GetMapping(value = "/summary")
-	public ResponseEntity<?> getSummary() {
-		// TODO
-		return null;
+	public ResponseEntity<List<SummaryDto>> getSummary(String minDate, String maxDate) {
+		
+		return ResponseEntity.ok().body(service.getSummary(minDate, maxDate));
 	}
 }
